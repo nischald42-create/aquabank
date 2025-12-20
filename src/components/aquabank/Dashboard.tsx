@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 
 interface DashboardProps {
   onNavigate: (page: string) => void;
+  isAdmin?: boolean;
 }
 
 const mockAccounts = [
@@ -14,7 +15,7 @@ const mockAccounts = [
   { id: 'SAV-001', type: 'Savings', balance: 12034.12 },
 ];
 
-export function Dashboard({ onNavigate }: DashboardProps) {
+export function Dashboard({ onNavigate, isAdmin }: DashboardProps) {
   const { user, signOut } = useAuth();
   const [accounts, setAccounts] = useState(mockAccounts);
   const [panel, setPanel] = useState<'transfer' | 'statements' | 'profile'>('transfer');

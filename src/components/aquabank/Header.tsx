@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { Menu } from 'lucide-react';
+import { Menu, Shield } from 'lucide-react';
 
 interface HeaderProps {
   currentPage: string;
   onNavigate: (page: string) => void;
+  isAdmin?: boolean;
 }
 
-export function Header({ currentPage, onNavigate }: HeaderProps) {
+export function Header({ currentPage, onNavigate, isAdmin }: HeaderProps) {
   const { user, signOut } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -43,12 +44,23 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
 
         <div className="flex items-center gap-[10px]">
           {user ? (
-            <button
-              onClick={() => onNavigate('dashboard')}
-              className="bg-primary-foreground text-secondary px-3 py-2 rounded-lg font-bold"
-            >
-              Dashboard
-            </button>
+            <>
+              {isAdmin && (
+                <button
+                  onClick={() => onNavigate('admin')}
+                  className="flex items-center gap-1 bg-accent text-secondary px-3 py-2 rounded-lg font-bold"
+                >
+                  <Shield size={16} />
+                  Admin
+                </button>
+              )}
+              <button
+                onClick={() => onNavigate('dashboard')}
+                className="bg-primary-foreground text-secondary px-3 py-2 rounded-lg font-bold"
+              >
+                Dashboard
+              </button>
+            </>
           ) : (
             <button
               onClick={() => onNavigate('login')}

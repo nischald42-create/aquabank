@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { useAdmin } from '@/hooks/useAdmin';
 import { Header } from '@/components/aquabank/Header';
 import { HomePage } from '@/components/aquabank/HomePage';
 import { ProductsPage } from '@/components/aquabank/ProductsPage';
@@ -10,10 +11,12 @@ import { ApplyPage } from '@/components/aquabank/ApplyPage';
 import { ContactPage } from '@/components/aquabank/ContactPage';
 import { AuthPage } from '@/components/aquabank/AuthPage';
 import { Dashboard } from '@/components/aquabank/Dashboard';
+import { AdminPanel } from '@/components/aquabank/admin/AdminPanel';
 
 const Index = () => {
   const [currentPage, setCurrentPage] = useState('home');
   const { user, loading } = useAuth();
+  const { isAdmin, loading: adminLoading } = useAdmin();
 
   useEffect(() => {
     if (user && currentPage === 'login') {
@@ -26,12 +29,17 @@ const Index = () => {
     window.scrollTo(0, 0);
   };
 
-  if (loading) {
+  if (loading || adminLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-background to-accent/20 flex items-center justify-center">
         <div className="text-muted-foreground">Loading...</div>
       </div>
     );
+  }
+
+  // Show admin panel if on admin page and user is admin
+  if (currentPage === 'admin' && isAdmin) {
+    return <AdminPanel onBack={() => handleNavigate('dashboard')} />;
   }
 
   const renderPage = () => {
@@ -53,7 +61,7 @@ const Index = () => {
       case 'login':
         return <AuthPage onNavigate={handleNavigate} />;
       case 'dashboard':
-        return user ? <Dashboard onNavigate={handleNavigate} /> : <AuthPage onNavigate={handleNavigate} />;
+        return user ? <Dashboard onNavigate={handleNavigate} isAdmin={isAdmin} /> : <AuthPage onNavigate={handleNavigate} />;
       default:
         return <HomePage onNavigate={handleNavigate} />;
     }
@@ -61,7 +69,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-accent/20">
-      <Header currentPage={currentPage} onNavigate={handleNavigate} />
+      <Header currentPage={currentPage} onNavigate={handleNavigate} isAdmin={isAdmin} />
       <main className="max-w-[1100px] mx-auto p-4 mt-7">
         {renderPage()}
       </main>
