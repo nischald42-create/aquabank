@@ -142,6 +142,92 @@ serve(async (req) => {
         });
       }
 
+      case "update_user": {
+        const { user_id, full_name, email, balance } = data;
+        
+        if (!user_id) {
+          return new Response(JSON.stringify({ error: "User ID required" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        // Update email in auth if provided
+        if (email) {
+          const { error: emailError } = await adminClient.auth.admin.updateUserById(user_id, {
+            email,
+            email_confirm: true,
+          });
+          if (emailError) {
+            console.error("Email update error:", emailError);
+          }
+        }
+
+        // Update profile
+        if (full_name !== undefined || email) {
+          const profileUpdate: Record<string, string> = {};
+          if (full_name !== undefined) profileUpdate.full_name = full_name;
+          if (email) profileUpdate.email = email;
+
+          const { error: profileError } = await adminClient
+            .from("profiles")
+            .update(profileUpdate)
+            .eq("user_id", user_id);
+
+          if (profileError) {
+            console.error("Profile update error:", profileError);
+          }
+        }
+
+        // Update balance in accounts table
+        if (balance !== undefined) {
+          const { error: balanceError } = await adminClient
+            .from("accounts")
+            .update({ balance: parseFloat(balance) })
+            .eq("user_id", user_id);
+
+          if (balanceError) {
+            console.error("Balance update error:", balanceError);
+            return new Response(JSON.stringify({ error: "Failed to update balance" }), {
+              status: 400,
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            });
+          }
+        }
+
+        return new Response(JSON.stringify({ success: true }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      case "get_user_transactions": {
+        const { user_id } = data;
+        
+        if (!user_id) {
+          return new Response(JSON.stringify({ error: "User ID required" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        const { data: transactions, error: txError } = await adminClient
+          .from("transactions")
+          .select("*")
+          .or(`from_user_id.eq.${user_id},to_user_id.eq.${user_id}`)
+          .order("created_at", { ascending: false });
+
+        if (txError) {
+          return new Response(JSON.stringify({ error: txError.message }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        return new Response(JSON.stringify({ success: true, transactions }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
       default:
         return new Response(JSON.stringify({ error: "Invalid action" }), {
           status: 400,
