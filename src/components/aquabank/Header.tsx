@@ -12,7 +12,7 @@ export function Header({ currentPage, onNavigate, isAdmin }: HeaderProps) {
   const { user, signOut } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const navItems = ['home', 'products', 'rates', 'branches', 'services', 'apply', 'contact'];
+  const navItems = ['home', 'products', 'rates', 'branches', 'services', 'apply', 'contact', 'docs'];
 
   return (
     <header className="sticky top-0 z-40 bg-gradient-to-r from-primary to-secondary text-primary-foreground px-5 py-[18px] shadow-lg rounded-b-[10px]">
