@@ -141,11 +141,31 @@ export function Dashboard({ onNavigate, isAdmin }: DashboardProps) {
       return;
     }
 
-    // Update balances
-    await supabase
+    // Update sender balance (deduct)
+    const { error: senderUpdateError } = await supabase
       .from('accounts')
       .update({ balance: accounts[0].balance - amount })
       .eq('id', accounts[0].id);
+
+    if (senderUpdateError) {
+      toast.error('Failed to update sender balance');
+      console.error(senderUpdateError);
+      return;
+    }
+
+    // Update recipient balance (credit)
+    const { data: recipientFullAccount } = await supabase
+      .from('accounts')
+      .select('id, balance')
+      .eq('account_number', transferTo)
+      .maybeSingle();
+
+    if (recipientFullAccount) {
+      await supabase
+        .from('accounts')
+        .update({ balance: recipientFullAccount.balance + amount })
+        .eq('id', recipientFullAccount.id);
+    }
 
     toast.success(`Sent $${amount.toFixed(2)} to account ${transferTo}`);
     setTransferAmount('');

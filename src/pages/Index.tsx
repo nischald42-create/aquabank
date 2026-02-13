@@ -12,6 +12,7 @@ import { ContactPage } from '@/components/aquabank/ContactPage';
 import { AuthPage } from '@/components/aquabank/AuthPage';
 import { Dashboard } from '@/components/aquabank/Dashboard';
 import { AdminPanel } from '@/components/aquabank/admin/AdminPanel';
+import { DocumentationPage } from '@/components/aquabank/DocumentationPage';
 
 const Index = () => {
   const [currentPage, setCurrentPage] = useState('home');
@@ -60,6 +61,8 @@ const Index = () => {
         return <ContactPage />;
       case 'login':
         return <AuthPage onNavigate={handleNavigate} />;
+      case 'docs':
+        return <DocumentationPage />;
       case 'dashboard':
         return user ? <Dashboard onNavigate={handleNavigate} isAdmin={isAdmin} /> : <AuthPage onNavigate={handleNavigate} />;
       default:
