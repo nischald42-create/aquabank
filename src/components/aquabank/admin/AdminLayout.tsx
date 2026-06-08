@@ -10,8 +10,8 @@ interface AdminLayoutProps {
 }
 
 const navItems = [
-  { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
-  { id: 'users', label: 'Users', icon: Users },
+  { id: 'dashboard', label: 'Analytics & Security', icon: BarChart3 },
+  { id: 'users', label: 'Users & Add User', icon: Users },
   { id: 'transactions', label: 'Transactions', icon: Activity },
   { id: 'branches', label: 'Branches', icon: Building2 },
   { id: 'settings', label: 'Settings', icon: Settings },

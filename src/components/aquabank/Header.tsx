@@ -13,6 +13,10 @@ export function Header({ currentPage, onNavigate, isAdmin }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = ['home', 'products', 'rates', 'branches', 'services', 'apply', 'contact', 'docs'];
+  const closeAndNavigate = (page: string) => {
+    onNavigate(page);
+    setMobileMenuOpen(false);
+  };
 
   return (
     <header className="sticky top-0 z-40 bg-gradient-to-r from-primary to-secondary text-primary-foreground px-5 py-[18px] shadow-lg rounded-b-[10px]">
@@ -48,10 +52,10 @@ export function Header({ currentPage, onNavigate, isAdmin }: HeaderProps) {
               {isAdmin && (
                 <button
                   onClick={() => onNavigate('admin')}
-                  className="flex items-center gap-1 bg-accent text-secondary px-3 py-2 rounded-lg font-bold"
+                  className="flex items-center gap-1 bg-accent text-secondary px-3 py-2 rounded-lg font-bold shadow-md"
                 >
                   <Shield size={16} />
-                  Admin
+                  Admin Panel
                 </button>
               )}
               <button
@@ -84,7 +88,7 @@ export function Header({ currentPage, onNavigate, isAdmin }: HeaderProps) {
             <a
               key={item}
               href="#"
-              onClick={(e) => { e.preventDefault(); onNavigate(item); setMobileMenuOpen(false); }}
+              onClick={(e) => { e.preventDefault(); closeAndNavigate(item); }}
               className={`px-[10px] py-2 rounded-lg font-semibold capitalize ${
                 currentPage === item ? 'bg-primary-foreground/10' : ''
               }`}
@@ -92,6 +96,15 @@ export function Header({ currentPage, onNavigate, isAdmin }: HeaderProps) {
               {item}
             </a>
           ))}
+          {isAdmin && (
+            <button
+              onClick={() => closeAndNavigate('admin')}
+              className="flex items-center gap-2 px-[10px] py-2 rounded-lg font-semibold bg-accent text-secondary"
+            >
+              <Shield size={16} />
+              Admin Panel
+            </button>
+          )}
         </nav>
       )}
     </header>
