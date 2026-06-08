@@ -130,10 +130,14 @@ export function AdminDashboard() {
     const last7Days = Array.from({ length: 7 }, (_, i) => {
       const date = new Date();
       date.setDate(date.getDate() - (6 - i));
+      const sameDayTransactions = transactions.filter((tx) => {
+        const txDate = new Date(tx.created_at);
+        return txDate.toDateString() === date.toDateString();
+      });
       return {
         date: date.toLocaleDateString('en-US', { weekday: 'short' }),
-        transactions: Math.floor(Math.random() * 10) + transactions.length / 7,
-        amount: Math.floor(Math.random() * 5000) + 1000,
+        transactions: sameDayTransactions.length,
+        amount: sameDayTransactions.reduce((sum, tx) => sum + Number(tx.amount || 0), 0),
       };
     });
     return last7Days;
@@ -158,8 +162,8 @@ export function AdminDashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
-        <p className="text-muted-foreground">Welcome to AquaBank Admin Panel - Live Cloud Data</p>
+        <h1 className="text-2xl font-bold text-[#0b2545] font-serif">Admin Security & Analytics</h1>
+        <p className="text-[#5f5134]">AquaBank control room with live users, balances, transactions, graphs, and security status.</p>
       </div>
 
       {/* Stats Grid */}
@@ -167,7 +171,7 @@ export function AdminDashboard() {
         {stats.map((stat) => {
           const Icon = stat.icon;
           return (
-            <div key={stat.label} className="bg-card rounded-xl p-6 shadow-sm border">
+            <div key={stat.label} className="bg-[#fffdf7] rounded-sm p-6 shadow-sm border border-[#d4af37]/30 border-t-4 border-t-[#d4af37]">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">{stat.label}</p>
@@ -185,8 +189,8 @@ export function AdminDashboard() {
 
       {/* Transaction Graph */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-card rounded-xl p-6 shadow-sm border">
-          <h3 className="font-semibold text-foreground mb-4">Transaction Volume (Last 7 Days)</h3>
+        <div className="bg-[#fffdf7] rounded-sm p-6 shadow-sm border border-[#0b2545]/15">
+          <h3 className="font-semibold text-[#0b2545] mb-4">Transaction Volume (Last 7 Days)</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={getTransactionChartData()}>
@@ -194,13 +198,13 @@ export function AdminDashboard() {
                 <XAxis dataKey="date" />
                 <YAxis />
                 <Tooltip />
-                <Bar dataKey="amount" fill="#0ea5e9" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="amount" fill="#d4af37" radius={[2, 2, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
-        <div className="bg-card rounded-xl p-6 shadow-sm border">
-          <h3 className="font-semibold text-foreground mb-4">User Growth</h3>
+        <div className="bg-[#fffdf7] rounded-sm p-6 shadow-sm border border-[#0b2545]/15">
+          <h3 className="font-semibold text-[#0b2545] mb-4">Transaction Count Trend</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={getTransactionChartData()}>
@@ -208,7 +212,7 @@ export function AdminDashboard() {
                 <XAxis dataKey="date" />
                 <YAxis />
                 <Tooltip />
-                <Line type="monotone" dataKey="transactions" stroke="#10b981" strokeWidth={2} />
+                <Line type="monotone" dataKey="transactions" stroke="#0b2545" strokeWidth={2} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -216,16 +220,16 @@ export function AdminDashboard() {
       </div>
 
       {/* Security Overview */}
-      <div className="bg-card rounded-xl p-6 shadow-sm border">
-        <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-          <Shield className="text-primary" size={20} />
+      <div className="bg-[#fffdf7] rounded-sm p-6 shadow-sm border border-[#0b2545]/15">
+        <h3 className="font-semibold text-[#0b2545] mb-4 flex items-center gap-2">
+          <Shield className="text-[#d4af37]" size={20} />
           Security Methods
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {securityMethods.map((method) => {
             const Icon = method.icon;
             return (
-              <div key={method.name} className="bg-muted/30 rounded-lg p-4 flex items-center gap-3">
+              <div key={method.name} className="bg-[#f5f1e8] rounded-sm p-4 flex items-center gap-3 border border-[#d4af37]/25">
                 <Icon className={method.color} size={24} />
                 <div>
                   <p className="font-medium text-foreground text-sm">{method.name}</p>
